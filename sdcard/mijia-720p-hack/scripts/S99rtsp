@@ -1,0 +1,43 @@
+#!/bin/sh
+## purpose: Init script for RTSP server
+## license: GPLv3+, http://www.gnu.org/licenses/gpl-3.0.html
+## author: Jan Sperling , 2017
+
+sd_mountdir="/tmp/sd"
+NAME="rtspd"
+DESC="RTSP server"
+DAEMON="${sd_mountdir}/mijia-720p-hack/bin/${NAME}"
+DAEMON_OPTS="-s"
+PIDFILE="/var/run/${NAME}.pid"
+
+if [ ! -x "${DAEMON}" ]; then
+  echo "Could not find ${DESC} binary"
+  exit 1
+fi
+
+case "$1" in
+  start)
+    echo "Starting ${DESC}"
+
+    start-stop-daemon --start --quiet --background \
+      --pidfile "${PIDFILE}" --make-pidfile --exec "${DAEMON}" -- ${DAEMON_OPTS}
+    [ $? = 0 ] && echo "OK" || echo "FAIL"
+    ;;
+  stop)
+    echo "Stopping ${DESC}"
+    start-stop-daemon --stop --quiet --oknodo \
+      --pidfile "${PIDFILE}" --remove-pidfile
+    [ $? = 0 ] && echo "OK" || echo "FAIL"
+    ;;
+  restart|reload)
+    "$0" stop
+    "$0" start
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+    ;;
+esac
+
+exit $?
+

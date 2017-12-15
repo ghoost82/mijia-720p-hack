@@ -1,0 +1,59 @@
+#!/bin/sh
+## purpose: Init script for dropbear SSH server
+## license: GPLv3+, http://www.gnu.org/licenses/gpl-3.0.html
+## author: Jan Sperling , 2017
+
+sd_mountdir="/tmp/sd"
+NAME="dropbear"
+DESC="SSH server"
+DAEMON="${sd_mountdir}/mijia-720p-hack/bin/${NAME}"
+DAEMON_OPTS="-R -p 22"
+PIDFILE="/var/run/${NAME}.pid"
+
+if [ ! -x "${DAEMON}" ]; then
+  echo "Could not find ${DESC} binary"
+  exit 1
+fi
+
+case "$1" in
+  start)
+    echo "Starting ${DESC}"
+    if [ ! -d /var/run ]; then
+      mkdir -p /var/run
+    fi
+    if [ ! -d /etc/dropbear ]; then
+      mkdir -p /etc/dropbear
+    fi
+
+    ## Security Purpose: recover previoys RSA keys from SDCARD
+    if [ -s "${sd_mountdir}/mijia-720p-hack/etc/dropbear_ecdsa_host_key" ]; then 
+      cp "${sd_mountdir}/mijia-720p-hack/etc/dropbear_ecdsa_host_key" /etc/dropbear
+    fi
+
+    start-stop-daemon --start --quiet \
+      --pidfile "${PIDFILE}" --exec "${DAEMON}" -- ${DAEMON_OPTS}
+    [ $? = 0 ] && echo "OK" || echo "FAIL"
+
+    ## Security Purpose: Save the keys in the SDCARD
+    if [ ! -s "${sd_mountdir}/mijia-720p-hack/etc/dropbear_ecdsa_host_key" ] &&
+       [ -s /etc/dropbear/dropbear_ecdsa_host_key ]; then
+      cp /etc/dropbear/dropbear_ecdsa_host_key "${sd_mountdir}/mijia-720p-hack/etc/"
+    fi
+    ;;
+  stop)
+    echo "Stopping ${DESC}"
+    start-stop-daemon --stop --quiet --oknodo \
+      --pidfile "${PIDFILE}"
+    [ $? = 0 ] && echo "OK" || echo "FAIL"
+    ;;
+  restart|reload)
+    "$0" stop
+    "$0" start
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+    ;;
+esac
+
+exit $?

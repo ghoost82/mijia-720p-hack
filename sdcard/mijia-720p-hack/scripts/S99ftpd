@@ -1,0 +1,35 @@
+#!/bin/sh
+## purpose: Init script for FTP server
+## license: GPLv3+, http://www.gnu.org/licenses/gpl-3.0.html
+## author: Jan Sperling , 2017
+
+sd_mountdir="/tmp/sd"
+LOGDIR="${sd_mountdir}/log"
+LOGFILE="${LOGDIR}/ftpd.log"
+NAME="ftpd"
+DESC="FTP server"
+DAEMON="tcpsvd"
+
+case "$1" in
+  start)
+    echo "Starting ${DESC}"
+
+    tcpsvd -vE 0.0.0.0 21 ftpd / >> "${LOGFILE}" 2>&1 &
+    [ $? = 0 ] && echo "OK" || echo "FAIL"
+    ;;
+  stop)
+    echo "Stopping ${DESC}"
+    pkill -f '^tcpsvd -vE 0.0.0.0 21 ftpd '
+    [ $? = 0 ] && echo "OK" || echo "FAIL"
+    ;;
+  restart|reload)
+    "$0" stop
+    "$0" start
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+    ;;
+esac
+
+exit $?

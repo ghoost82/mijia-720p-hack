@@ -1,0 +1,55 @@
+#!/bin/sh
+## purpose: prepare system for hack, enable ft_modes != 0
+## license: GPLv3+, http://www.gnu.org/licenses/gpl-3.0.html
+## author: Jan Sperling , 2017
+
+if [ -d /mnt/media/mmcblk0p1 ]; then
+	mmcdir="/mnt/media/mmcblk0p1"
+elif [ -d /mnt/media/mmcblk0 ]; then
+	mmcdir="/mnt/media/mmcblk0"
+fi
+
+if [ -f "${mmcdir}/mijia-720p-hack.cfg" ]; then
+  . "${mmcdir}/mijia-720p-hack.cfg"
+fi
+
+if [ "${DISABLE_HACK}" -eq 1 ]; then
+  echo "Hack disabled, do nothing"
+elif [ -f /mnt/data/ft/prikey.pem ] && [ -f /mnt/data/ft/rsa_decrypt ]; then
+  echo "ft_modes != 0 already possible"
+else
+  echo "Enable ft_modes != 0"
+  if ! [ -f /mnt/data/ft/prikey.pem ]; then
+    cat > /mnt/data/ft/prikey.pem << EOF
+-----BEGIN RSA PRIVATE KEY-----
+MIICXAIBAAKBgQC2Og1+zeBxdNQsZ4Vd5lrWKkavrRcxord6KlxCAKpOPnYOvVc6
+PVGASJMTZLT+ZTgNciCcfVu0WHFrisn0zRAxLimoNK/VELdQCE+T40ewouWBI/gJ
+Uy56OXcqgKzVZPPJFCpGHl1bT+EYM83nBIX0SOdI23pysuchCpfil3PkDwIDAQAB
+AoGAU2Eeua20C9XcG3FGqd90Ith3PXzixvhgIYruadjqFCEqXbYvClvyRdNvUIlc
+86YWzrgwycnmQw/Q3ddEbznBNSnIbmKa0kMPndZqKwQV5SSmai7mfIzavzXxmpYN
+zyxmKZOX6qAiUKW6z2MkPL9yGoOaU8DgLds98F2dnFU1cJkCQQDhR9+kqMwJs0YJ
+ikWbhRiwxnZHAL4sIbuYyejG/mmhMC0X7RNL7orSuUOLme7Jb8sSLMqNWfJEOYt4
+IQEDhE/DAkEAzxM+3lX+05+2c5doMlML9ZuvPbOxiMVKA7DdBoCx1btPwG7UufUs
+DoUw0JG9yfsOZsa5UejRIRqSRagqd/ZBxQJAFlADE5DwXImYBzvdtxCQqHmPn2qw
+aziQFwrwdj0egyt9W+BMR/oBX+ufiAUgBG2BJHSxPxzIhP9aE/TY39tL9wJALMaR
+kovvxRzE2+vCSRdx/5LBassfOV7HqVKmCFDtozSUgxyz/N3Jv/4G1yKccj9KFukj
+i1WXWtwfAtbhD/18rQJBAMleTwLdcBypljiWT2a6w779GT+7Hh1Wf9YKi0FeX/HO
+UREzEf+R3IvncRA1Jhu/ATcZ6ZZ7vBVcoHO0Y9Aqd4U=
+-----END RSA PRIVATE KEY-----
+EOF
+  fi
+  if ! [ -f /mnt/data/ft/rsa_decrypt ]; then
+    if [ -f "${mmcdir}/ft/rsa_decrypt" ]; then
+      cp "${mmcdir}/ft/rsa_decrypt" /mnt/data/ft/rsa_decrypt
+    else
+      cat > /mnt/data/ft/rsa_decrypt << EOF
+#!/bin/sh
+#FAKE rsa_decrypt
+cp "\${2%/*}/md5.sum" "\$2"
+EOF
+      chmod +x /mnt/data/ft/rsa_decrypt
+    fi
+  fi
+  echo "System prepared for hack, reboot"
+  reboot
+fi

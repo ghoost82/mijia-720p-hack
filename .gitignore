@@ -1,0 +1,6 @@
+build
+prefix
+src
+sdcard/mijia-720p-hack/bin/*
+gm_lib/product
+gm_lib/gm_lib

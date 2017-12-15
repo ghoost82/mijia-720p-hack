@@ -1,0 +1,49 @@
+#!/bin/sh
+## purpose: Init script for Samba server
+## license: GPLv3+, http://www.gnu.org/licenses/gpl-3.0.html
+## author: Jan Sperling , 2017
+
+sd_mountdir="/tmp/sd"
+NAME="samba"
+DESC="CIFS server"
+DAEMON="${sd_mountdir}/mijia-720p-hack/bin/smbd"
+DAEMON_OPTS="-D"
+PIDFILE="/var/run/${NAME}.pid"
+
+if [ ! -x "${DAEMON}" ]; then
+  echo "Could not find ${DESC} binary"
+  exit 1
+fi
+
+case "$1" in
+  start)
+    echo "Starting ${DESC}"
+    if [ ! -d /var/run ]; then
+      mkdir -p /var/run
+    fi
+
+    if [ ! -d "${sd_mountdir}/mijia-720p-hack/tmp/samba" ]; then
+      mkdir -p "${sd_mountdir}/mijia-720p-hack/tmp/samba"
+    fi
+
+    start-stop-daemon --start --quiet --oknodo \
+      --exec "${DAEMON}" -- ${DAEMON_OPTS}
+    [ $? = 0 ] && echo "OK" || echo "FAIL"
+    ;;
+  stop)
+    echo "Stopping ${DESC}"
+    start-stop-daemon --stop --quiet --oknodo \
+      --pidfile "${PIDFILE}"
+    [ $? = 0 ] && echo "OK" || echo "FAIL"
+    ;;
+  restart|reload)
+    "$0" stop
+    "$0" start
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+    ;;
+esac
+
+exit $?

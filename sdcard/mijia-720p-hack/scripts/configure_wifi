@@ -1,0 +1,69 @@
+#!/bin/sh
+## purpose: Configure WiFi
+## license: GPLv3+, http://www.gnu.org/licenses/gpl-3.0.html
+## author: Jan Sperling , 2017
+
+sd_mountdir="/tmp/sd"
+. "${sd_mountdir}/mijia-720p-hack.cfg"
+
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+  cat << EOF
+Usage of ${0} [<WIFI_SSID> [<WIFI_PASS>]]
+Configure WiFi to connect to WIFI_SSID. WIFI_PASS is needed for WPA-PSK secured WiFis.
+If no argument is given the values from mijia-720p-hack.cfg are used.
+Otherwise the WiFi setup and mijia-720p-hack.cfg will be updated.
+EOF
+  exit
+fi
+
+if [ "$#" -ne 0 ]; then
+  WIFI_SSID="$1"
+  WIFI_PASS="$2"
+fi
+
+if [ -n "${WIFI_SSID}" ]; then
+  echo "Configure WiFi"
+  nvram_change=0
+
+  if [ -z "${WIFI_PASS}" ]; then
+    WIFI_KEY_MGMT="NONE"
+  else
+    WIFI_KEY_MGMT="WPA"
+  fi
+
+  if [ "$(/usr/sbin/nvram get miio_ssid)" != "${WIFI_SSID}" ]; then
+    /usr/sbin/nvram set miio_ssid="${WIFI_SSID}"
+    nvram_change=1
+  fi
+  if [ "$(/usr/sbin/nvram get miio_key_mgmt)" != "${WIFI_KEY_MGMT}" ]; then
+    /usr/sbin/nvram set miio_key_mgmt="${WIFI_KEY_MGMT}"
+    nvram_change=1
+  fi
+  if [ "(/usr/sbin/nvram get miio_passwd)" != "${WIFI_PASS}" ]; then
+    usr/sbin/nvram set miio_passwd="${WIFI_PASS}"
+    nvram_change=1
+  fi
+  if [ "${nvram_change}" -eq 1 ]; then
+    /usr/sbin/nvram set wifi_ready=yes
+    /usr/sbin/nvram commit
+    if pgrep wpa_supplicant > /dev/null; then
+      /mnt/data/imi/imi_init/S92wifi restart
+    fi
+  fi
+fi
+
+if ! grep -q "^WIFI_SSID=\"${WIFI_SSID}\"" "${sd_mountdir}/mijia-720p-hack.cfg"; then
+  if ! grep -q "^WIFI_SSID="; then
+    echo "WIFI_SSID=\"${WIFI_SSID}\"" >> "${sd_mountdir}/mijia-720p-hack.cfg"
+  else
+    sed -i -e "s/\(^WIFI_SSID)\=.*/\1=\"${WIFI_SSID}\"" "${sd_mountdir}/mijia-720p-hack.cfg"
+  fi
+fi
+if ! grep -q "^WIFI_PASS=\"${WIFI_PASS}\"" "${sd_mountdir}/mijia-720p-hack.cfg"; then
+  if ! grep -q "^WIFI_PASS="; then
+    echo "WIFI_PASS=\"${WIFI_PASS}\"" >> "${sd_mountdir}/mijia-720p-hack.cfg"
+  else
+    sed -i -e "s/\(^WIFI_PASS)\=.*/\1=\"${WIFI_PASS}\"" "${sd_mountdir}/mijia-720p-hack.cfg"
+  fi
+fi
+
