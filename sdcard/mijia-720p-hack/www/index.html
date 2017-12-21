@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mijia 720P hack</title>
+  </head>
+  <body>
+    <h1>Mijia 720P HTTP Server</h1>
+    <p>This Mijia is powered by a custom firmware. See <a href="https://github.com/ghoost82/mijia-720p-hack"</a> for more informations</a>.</p>
+    <h2>RTSP stream channels</h2>
+    <p>This camera IP is <span id="ip"></span></p>
+    <ul>
+      <li><a id="ch0_0" href="">High definition video stream</a></li>
+    </ul>
+    <h2>Record files</h2>
+    <ul>
+      <li><a href="/media/">Click here to access the record files.</a></li>
+    </ul>
+    <pre>
+    </pre>
+    <script type="text/javascript">
+      var ip = location.host;
+      document.getElementById("ip").textContent=ip;
+      document.getElementById("ch0_0").href="rtsp://"+ip+":554/live/ch00_0";
+    </script>
+  </body>
+</html>

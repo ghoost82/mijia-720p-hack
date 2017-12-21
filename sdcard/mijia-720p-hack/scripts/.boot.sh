@@ -19,19 +19,19 @@ if [ "${ENABLE_TELNETD}" -eq 1 ]; then
   fi
 fi
 if [ "${ENABLE_SSHD}" -eq 1 ]; then
-  ${sd_mountdir}/scripts/S99dropbear start
+  ${sd_mountdir}/mijia-720p-hack/scripts/S99dropbear start
 fi
 if [ "${ENABLE_HTTPD}" -eq 1 ]; then
-  ${sd_mountdir}/scripts/S99lighttpd start
+  ${sd_mountdir}/mijia-720p-hack/scripts/S99lighttpd start
 fi
 if [ "${ENABLE_FTPD}" -eq 1 ]; then
-    ${sd_mountdir}/scripts/S99ftpd start
+  ${sd_mountdir}/mijia-720p-hack/scripts/S99ftpd start
 fi
 if [ "${ENABLE_SAMBA}" -eq 1 ]; then
-  ${sd_mountdir}/scripts/S99samba start
+  ${sd_mountdir}/mijia-720p-hack/scripts/S99samba start
 fi
 if [ "${ENABLE_RTSP}" -eq 1 ]; then
-  ${sd_mountdir}/scripts/S99rtsp start
+  ${sd_mountdir}/mijia-720p-hack/scripts/S99rtsp start
 fi
 
 ## Sync time
