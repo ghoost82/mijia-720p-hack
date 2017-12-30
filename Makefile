@@ -54,29 +54,29 @@ SAMBAVERSION = 3.6.25
 SAMBAARCHIVE = samba-$(SAMBAVERSION).tar.gz
 SAMBAURI = https://download.samba.org/pub/samba/$(SAMBAARCHIVE)
 
-SAMPLES := display_with_encode \
-           liveview_with_clearwin \
-           liveview_with_pip \
-           encode_capture_substream \
-           encode_with_deinterlace \
-           encode_with_osd \
-           encode_with_roi \
-           encode_force_keyframe \
-           encode_with_snapshot \
-           encode_with_watermark_and_vui \
-           encode_with_capture_motion_detection \
-           encode_with_capture_motion_detection2 \
-           encode_with_capture_tamper_detection \
-           encode_with_capture_tamper_detection2 \
-           encode_update_notification \
-           encode_with_advance_feature \
-           encode_with_getraw \
-           encode_with_getraw2 \
-           encode_with_eptz \
-           encode_with_av_sync \
-           audio_record \
-           audio_playback \
-           audio_livesound
+SAMPLES := gm_lib/display_with_encode \
+           gm_lib/liveview_with_clearwin \
+           gm_lib/liveview_with_pip \
+           gm_lib/encode_capture_substream \
+           gm_lib/encode_with_deinterlace \
+           gm_lib/encode_with_osd \
+           gm_lib/encode_with_roi \
+           gm_lib/encode_force_keyframe \
+           gm_lib/encode_with_snapshot \
+           gm_lib/encode_with_watermark_and_vui \
+           gm_lib/encode_with_capture_motion_detection \
+           gm_lib/encode_with_capture_motion_detection2 \
+           gm_lib/encode_with_capture_tamper_detection \
+           gm_lib/encode_with_capture_tamper_detection2 \
+           gm_lib/encode_update_notification \
+           gm_lib/encode_with_advance_feature \
+           gm_lib/encode_with_getraw \
+           gm_lib/encode_with_getraw2 \
+           gm_lib/encode_with_eptz \
+           gm_lib/encode_with_av_sync \
+           gm_lib/audio_record \
+           gm_lib/audio_playback \
+           gm_lib/audio_livesound
 
 .PHONY: all libs fetch-sources
 
@@ -86,7 +86,7 @@ libs: $(BUILDDIR)/zlib $(BUILDDIR)/libxml2 $(BUILDDIR)/libjpeg-turbo $(BUILDDIR)
 
 fetch-sources: $(SOURCEDIR)/$(ZLIBARCHIVE) $(SOURCEDIR)/$(LIBXML2ARCHIVE) $(SOURCEDIR)/$(LIBJPEGARCHIVE) $(SOURCEDIR)/$(LIBPNGARCHIVE) $(SOURCEDIR)/$(LIBGDARCHIVE) $(SOURCEDIR)/$(PCREARCHIVE) $(SOURCEDIR)/$(DROPBEARARCHIVE) $(SOURCEDIR)/$(LIGHTTPDARCHIVE) $(SOURCEDIR)/$(PHPARCHIVE) $(SOURCEDIR)/$(SAMBAARCHIVE)
 
-samples: gm_lib/$(SAMPLES)
+samples: $(SAMPLES)
 
 $(SOURCEDIR)/$(ZLIBARCHIVE):
 	mkdir -p $(TOPDIR)/$(SOURCEDIR) && \
