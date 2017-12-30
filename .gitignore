@@ -2,5 +2,6 @@ build
 prefix
 src
 sdcard/mijia-720p-hack/bin/*
+sdcard/manufacture.bin
 gm_lib/*
 !gm_lib/README
