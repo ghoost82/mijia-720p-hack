@@ -23,7 +23,7 @@ disable_binary() {
   if [ ! -f /tmp/disable-binary ]; then
     cat > /tmp/disable-binary << EOF
 #!/bin/sh
-echo "$0 disabled"
+echo "\$0 disabled with mijia-720p-hack"
 EOF
     chmod +x /tmp/disable-binary
   fi
@@ -46,17 +46,17 @@ enable_binary() {
   fi
 }
 
-## Prepare restartd                                                        
-if ! [ -f /tmp/etc/restartd.conf.org ] &&                                  
-  mountpoint -q /etc; then                                                 
-  cp /mnt/data/restartd/restartd.conf /tmp/etc/restartd.conf.org           
-fi                                                                         
-if ! mount | grep -q /mnt/data/restartd/restartd.conf; then                
-  touch /tmp/etc/restartd.conf                                             
-  mount --bind /tmp/etc/restartd.conf /mnt/data/restartd/restartd.conf     
-fi                                                                         
-                                                                           
-/mnt/data/imi/imi_init/S99restartd stop                                    
+## Prepare restartd
+if ! [ -f /tmp/etc/restartd.conf.org ] &&
+  mountpoint -q /etc; then
+  cp /mnt/data/restartd/restartd.conf /tmp/etc/restartd.conf.org
+fi
+if ! mount | grep -q /mnt/data/restartd/restartd.conf; then
+  touch /tmp/etc/restartd.conf
+  mount --bind /tmp/etc/restartd.conf /mnt/data/restartd/restartd.conf
+fi
+
+/mnt/data/imi/imi_init/S99restartd stop
 > /tmp/etc/restartd.conf
 
 if [ "${DISABLE_CLOUD}" -eq 1 ]; then
@@ -70,6 +70,8 @@ if [ "${DISABLE_CLOUD}" -eq 1 ]; then
   disable_binary "/mnt/data/miot/miot_qrcode.sh"
   #/mnt/data/imi/imi_init/S95miio_smb
   disable_binary "/mnt/data/miio_smb/miio_smb" "miio_smb"
+  # cron
+  disable_binary "/mnt/data/miot/logmi.sh" 
 else
   echo "Enabling Cloud"
   #/mnt/data/imi/imi_init/S95miio_smb
@@ -81,6 +83,8 @@ else
   #/mnt/data/imi/imi_init/S93miio_client
   enable_binary "/mnt/data/ot_wifi_tool/miio_client" "miio_client"
   enable_binary "/mnt/data/ot_wifi_tool/miio_client_helper_nomqtt.sh" "miio_client_helper"
+  # cron
+  enable_binary "/mnt/data/miot/logmi.sh" 
 fi
 
 if [ "${DISABLE_CLOUD}" -eq 1 ] || [ "${DISABLE_CLOUD_STREAMING}" -eq 1 ]; then
@@ -107,11 +111,12 @@ else
   enable_binary "/mnt/data/miio_ota/miio_ota" "miio_ota"
 fi
 
-#readd telnet to to restard.conf                                                                                                                 
-if [ "${ENABLE_TELNETD}" -eq 1 ]; then                                                                                                           
+#readd telnet to to restard.conf
+if [ "${ENABLE_TELNETD}" -eq 1 ] &&
+   ! grep -q telnetd /tmp/etc/restartd.conf; then
   echo "telnetd \"/usr/sbin/telnetd\" \"/mnt/data/imi/imi_init/_S50telnet restart\" \"/bin/echo 'telnetd is running'\"" >> /tmp/etc/restartd.conf
-fi                                                                                                                                               
-                                                                                                                                                   
-if pgrep /mnt/data/restartd/restartd > /dev/null; then                                                                                           
-  /mnt/data/imi/imi_init/S99restartd restart          
-fi      
+fi
+
+if pgrep /mnt/data/restartd/restartd > /dev/null; then
+  /mnt/data/imi/imi_init/S99restartd restart
+fi

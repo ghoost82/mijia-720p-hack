@@ -4,14 +4,20 @@
 ## author: Jan Sperling , 2017
 
 sd_mountdir="/tmp/sd"
+LOGDIR="${sd_mountdir}/log"
+LOGFILE="${LOGDIR}/ft_boot.log"
 if [ -f "${sd_mountdir}/mijia-720p-hack.cfg" ]; then
   . "${sd_mountdir}/mijia-720p-hack.cfg"
 fi
 
+(
+
+echo "Executing /mnt/data/test/boot.sh"
+
 ## Start enabled services
 if [ "${ENABLE_TELNETD}" -eq 1 ]; then
   /mnt/data/imi/imi_init/_S50telnet start
-  if ! grep -q telnetd /tmp/restartd.conf; then
+  if ! grep -q telnetd /tmp/etc/restartd.conf; then
     echo "telnetd \"/usr/sbin/telnetd\" \"/mnt/data/imi/imi_init/_S50telnet restart\" \"/bin/echo 'telnetd is running'\"" >> /tmp/etc/restartd.conf
     if pgrep /mnt/data/restartd/restartd > /dev/null; then  
       /mnt/data/imi/imi_init/S99restartd restart    
@@ -57,4 +63,4 @@ if [ -f /mnt/data/test/boot.sh ]; then
   rm /mnt/data/test/boot.sh
 fi
 
-
+) >> "${LOGFILE}" 2>&1

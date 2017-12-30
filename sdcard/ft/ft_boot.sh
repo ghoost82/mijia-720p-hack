@@ -52,7 +52,7 @@ if [ -f "${sd_mountdir}/mijia-720p-hack.cfg" ]; then
 fi
 
 if [ "${DISABLE_HACK}" -eq 1 ]; then
-  echo "Hack disabled, proceed with default start" i| tee -a "${LOGFILE}"
+  echo "Hack disabled, proceed with default start" | tee -a "${LOGFILE}"
   echo 0 > /tmp/ft_mode
   do_vg_boot
   exit
@@ -95,13 +95,14 @@ if ! mountpoint -q /etc; then
   mount --rbind /tmp/etc /etc
 fi
 
-
 ## Set time zone
 ##################################################################################
-echo "Configure time zone"
-rm /tmp/etc/TZ
-echo "${TIMEZONE}" > /tmp/etc/TZ
-export TZ="${TIMEZONE}"
+if [ -n "${TIMEZONE}" ]; then
+  echo "Configure time zone"
+  rm /tmp/etc/TZ
+  echo "${TIMEZONE}" > /tmp/etc/TZ
+  export TZ="${TIMEZONE}"
+fi
 
 ## Set root Password
 ##################################################################################
@@ -112,6 +113,7 @@ if [ -n "${ROOT_PASSWORD}" ]; then
     if ! [ -d "${sd_mountdir}/mijia-720p-hack/tmp/samba" ]; then
       mkdir -p "${sd_mountdir}/mijia-720p-hack/tmp/samba"
     fi
+    echo "Setting Samba root password"
     (echo "${ROOT_PASS}"; echo "${ROOT_PASS}") | "${sd_mountdir}/mijia-720p-hack/bin/smbpasswd" -a -s
   fi
 else
@@ -121,12 +123,14 @@ fi
 ## WIFI
 ##################################################################################
 if [ -f "${sd_mountdir}/mijia-720p-hack/scripts/configure_wifi" ]; then
+  echo "Configure WiFi"
   sh "${sd_mountdir}/mijia-720p-hack/scripts/configure_wifi"
 fi
 
 ## Disable Cloud Services, streaming and OTA
 ##################################################################################
 if [ -f "${sd_mountdir}/mijia-720p-hack/scripts/cloud_control" ]; then
+  echo "Configure Cloud Services"
   sh "${sd_mountdir}/mijia-720p-hack/scripts/cloud_control"
 fi
 
@@ -134,7 +138,6 @@ fi
 
 ## Start enabled Services
 ##################################################################################
-echo "RTSP_OPTIONS=\"${RTSP_OPTIONS}\"" > /tmp/etc/rtsp
 if ! [ -f /mnt/data/test/boot.sh ]; then
   ln -s ${sd_mountdir}/mijia-720p-hack/scripts/.boot.sh /mnt/data/test/boot.sh
 fi

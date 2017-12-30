@@ -366,7 +366,7 @@ $(BUILDDIR)/samba: $(SOURCEDIR)/$(SAMBAARCHIVE)
 	touch $@
 
 sdcard/manufacture.bin:
-	tar -cf $(TOPDIR)/sdcard/manufacture.bin test_drv
+	tar -cf $(TOPDIR)/sdcard/manufacture.bin manufacture/test_drv
 
 
 gm_lib/rtspd: 

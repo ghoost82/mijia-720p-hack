@@ -4,9 +4,9 @@
 ## author: Jan Sperling , 2017
 
 if [ -d /mnt/media/mmcblk0p1 ]; then
-	mmcdir="/mnt/media/mmcblk0p1"
+  mmcdir="/mnt/media/mmcblk0p1"
 elif [ -d /mnt/media/mmcblk0 ]; then
-	mmcdir="/mnt/media/mmcblk0"
+  mmcdir="/mnt/media/mmcblk0"
 fi
 
 if [ -f "${mmcdir}/mijia-720p-hack.cfg" ]; then
@@ -47,8 +47,8 @@ EOF
 #FAKE rsa_decrypt
 cp "\${2%/*}/md5.sum" "\$2"
 EOF
-      chmod +x /mnt/data/ft/rsa_decrypt
     fi
+    chmod +x /mnt/data/ft/rsa_decrypt
   fi
   echo "System prepared for hack, reboot"
   reboot
