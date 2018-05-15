@@ -61,6 +61,8 @@ fi
 
 if [ "${DISABLE_CLOUD}" -eq 1 ]; then
   echo "Disabling Cloud"
+  #/mnt/data/imi/imi_init/S60miio_avstreamer
+  disable_binary "/mnt/data/miio_av/miio_avstreamer" "miio_avstreamer"
   #/mnt/data/imi/imi_init/S93miio_client
   disable_binary "/mnt/data/ot_wifi_tool/miio_client" "miio_client"
   disable_binary "/mnt/data/ot_wifi_tool/miio_client_helper_nomqtt.sh" "miio_client_helper"
@@ -74,27 +76,19 @@ if [ "${DISABLE_CLOUD}" -eq 1 ]; then
   disable_binary "/mnt/data/miot/logmi.sh" 
 else
   echo "Enabling Cloud"
-  #/mnt/data/imi/imi_init/S95miio_smb
-  enable_binary "/mnt/data/miio_smb/miio_smb" "miio_smb"
-  #/mnt/data/imi/imi_init/S93miot_qrcode
-  enable_binary "/mnt/data/miot/miot_qrcode.sh"
-  #/mnt/data/imi/imi_init/S93miot_devicekit
-  enable_binary "/mnt/data/miot/miot_devicekit" "miot_devicekit"
+  #/mnt/data/imi/imi_init/S60miio_avstreamer
+  enable_binary "/mnt/data/miio_av/miio_avstreamer" "miio_avstreamer"
   #/mnt/data/imi/imi_init/S93miio_client
   enable_binary "/mnt/data/ot_wifi_tool/miio_client" "miio_client"
   enable_binary "/mnt/data/ot_wifi_tool/miio_client_helper_nomqtt.sh" "miio_client_helper"
+  #/mnt/data/imi/imi_init/S93miot_devicekit
+  enable_binary "/mnt/data/miot/miot_devicekit" "miot_devicekit"
+  #/mnt/data/imi/imi_init/S93miot_qrcode
+  enable_binary "/mnt/data/miot/miot_qrcode.sh"
+  #/mnt/data/imi/imi_init/S95miio_smb
+  enable_binary "/mnt/data/miio_smb/miio_smb" "miio_smb"
   # cron
   enable_binary "/mnt/data/miot/logmi.sh" 
-fi
-
-if [ "${DISABLE_CLOUD}" -eq 1 ] || [ "${DISABLE_CLOUD_STREAMING}" -eq 1 ]; then
-  echo "Disabling Cloud Streaming"
-  #/mnt/data/imi/imi_init/S60miio_avstreamer
-  disable_binary "/mnt/data/miio_av/miio_avstreamer" "miio_avstreamer"
-else
-  #/mnt/data/imi/imi_init/S60miio_avstreamer
-  echo "Enabling Cloud Streaming"
-  enable_binary "/mnt/data/miio_av/miio_avstreamer" "miio_avstreamer"
 fi
 
 if [ "${DISABLE_CLOUD}" -eq 1 ] || [ "${DISABLE_OTA}" -eq 1 ]; then
