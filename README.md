@@ -119,7 +119,7 @@ Default login/password:
 RTSP Server
 -----------
 
-f enabled the RTSP server is on port 554.
+If enabled the RTSP server is on port 554.
 
 You can connect to live video stream (currently only supports 720p) on:
 
@@ -141,6 +141,16 @@ The share is readable by everyone.
 Default login/password for read/write access: 
 * login = root
 * password = 1234qwer (unless you specified another password in **mijia-720p-hack.cfg.cfg** file)
+
+
+Cloud Services
+--------------
+
+Disabling the cloud services disables the following functions:
+
+* Motion detection
+* No video data or configuration with the smartphone application
+* No recordings on the SD card or a remote file system
 
 I want more !
 =============
