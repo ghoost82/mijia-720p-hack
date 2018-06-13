@@ -4,7 +4,12 @@
 ## author: Jan Sperling , 2017
 
 sd_mountdir="/tmp/sd"
-. "${sd_mountdir}/mijia-720p-hack.cfg"
+if [ -r "${sd_mountdir}/mijia-720p-hack/scripts/functions.sh" ]; then
+  . "${sd_mountdir}/mijia-720p-hack/scripts/functions.sh"
+else
+  echo "Unable to load basic functions"
+  exit 1
+fi
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
   cat << EOF
@@ -17,8 +22,8 @@ EOF
 fi
 
 if [ "$#" -ne 0 ]; then
-  WIFI_SSID="$1"
-  WIFI_PASS="$2"
+  WIFI_SSID="${1}"
+  WIFI_PASS="${2}"
 fi
 
 if [ -n "${WIFI_SSID}" ]; then
@@ -31,39 +36,22 @@ if [ -n "${WIFI_SSID}" ]; then
     WIFI_KEY_MGMT="WPA"
   fi
 
-  if [ "$(/usr/sbin/nvram get miio_ssid)" != "${WIFI_SSID}" ]; then
-    /usr/sbin/nvram set miio_ssid="${WIFI_SSID}"
-    nvram_change=1
+  if [ "$(get_nvram miio_ssid)" != "${WIFI_SSID}" ]; then
+    set_nvram miio_ssid "${WIFI_SSID}"
   fi
-  if [ "$(/usr/sbin/nvram get miio_key_mgmt)" != "${WIFI_KEY_MGMT}" ]; then
-    /usr/sbin/nvram set miio_key_mgmt="${WIFI_KEY_MGMT}"
-    nvram_change=1
+  if [ "$(get_nvram miio_key_mgmt)" != "${WIFI_KEY_MGMT}" ]; then
+    set_nvram miio_key_mgmt "${WIFI_KEY_MGMT}"
   fi
-  if [ "(/usr/sbin/nvram get miio_passwd)" != "${WIFI_PASS}" ]; then
-    usr/sbin/nvram set miio_passwd="${WIFI_PASS}"
-    nvram_change=1
+  if [ "$(get_nvram miio_passwd)" != "${WIFI_PASS}" ]; then
+    set_nvram miio_passwd "${WIFI_PASS}"
   fi
-  if [ "${nvram_change}" -eq 1 ]; then
-    /usr/sbin/nvram set wifi_ready=yes
-    /usr/sbin/nvram commit
+  if [ "$(get_nvram wifi_ready)" != "yes" ]; then
+    set_nvram wifi_ready yes
     if pgrep wpa_supplicant > /dev/null; then
       /mnt/data/imi/imi_init/S92wifi restart
     fi
   fi
 fi
 
-if ! grep -q "^WIFI_SSID=\"${WIFI_SSID}\"" "${sd_mountdir}/mijia-720p-hack.cfg"; then
-  if ! grep -q "^WIFI_SSID="; then
-    echo "WIFI_SSID=\"${WIFI_SSID}\"" >> "${sd_mountdir}/mijia-720p-hack.cfg"
-  else
-    sed -i -e "s/\(^WIFI_SSID)\=.*/\1=\"${WIFI_SSID}\"" "${sd_mountdir}/mijia-720p-hack.cfg"
-  fi
-fi
-if ! grep -q "^WIFI_PASS=\"${WIFI_PASS}\"" "${sd_mountdir}/mijia-720p-hack.cfg"; then
-  if ! grep -q "^WIFI_PASS="; then
-    echo "WIFI_PASS=\"${WIFI_PASS}\"" >> "${sd_mountdir}/mijia-720p-hack.cfg"
-  else
-    sed -i -e "s/\(^WIFI_PASS)\=.*/\1=\"${WIFI_PASS}\"" "${sd_mountdir}/mijia-720p-hack.cfg"
-  fi
-fi
-
+set_basecfg WIFI_SSID "${WIFI_SSID}"
+set_basecfg WIFI_PASS "${WIFI_PASS}"

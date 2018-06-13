@@ -4,35 +4,33 @@
 ## author: Jan Sperling , 2017
 
 sd_mountdir="/tmp/sd"
+if [ -r "${sd_mountdir}/mijia-720p-hack/scripts/functions.sh" ]; then
+  . "${sd_mountdir}/mijia-720p-hack/scripts/functions.sh"
+else
+  echo "Unable to load basic functions"
+  exit 1
+fi
+
 NAME="dropbear"
 DESC="SSH server"
 DAEMON="${sd_mountdir}/mijia-720p-hack/bin/${NAME}"
 DAEMON_OPTS="-R -p 22"
 PIDFILE="/var/run/${NAME}.pid"
+LOGFILE="${LOGDIR}/${NAME}.log"
 
-if [ ! -x "${DAEMON}" ]; then
-  echo "Could not find ${DESC} binary"
-  exit 1
-fi
+check_daemon_bin "${DAEMON}" "${DESC}"
 
 case "$1" in
   start)
-    echo "Starting ${DESC}"
-    if [ ! -d /var/run ]; then
-      mkdir -p /var/run
-    fi
     if [ ! -d /etc/dropbear ]; then
       mkdir -p /etc/dropbear
     fi
-
     ## Security Purpose: recover previoys RSA keys from SDCARD
     if [ -s "${sd_mountdir}/mijia-720p-hack/etc/dropbear_ecdsa_host_key" ]; then 
       cp "${sd_mountdir}/mijia-720p-hack/etc/dropbear_ecdsa_host_key" /etc/dropbear
     fi
 
-    start-stop-daemon --start --quiet \
-      --pidfile "${PIDFILE}" --exec "${DAEMON}" -- ${DAEMON_OPTS}
-    [ $? = 0 ] && echo "OK" || echo "FAIL"
+    start_daemon
 
     ## Security Purpose: Save the keys in the SDCARD
     if [ ! -s "${sd_mountdir}/mijia-720p-hack/etc/dropbear_ecdsa_host_key" ] &&
@@ -41,17 +39,17 @@ case "$1" in
     fi
     ;;
   stop)
-    echo "Stopping ${DESC}"
-    start-stop-daemon --stop --quiet --oknodo \
-      --pidfile "${PIDFILE}"
-    [ $? = 0 ] && echo "OK" || echo "FAIL"
+    stop_daemon
     ;;
   restart|reload)
     "$0" stop
     "$0" start
     ;;
+  status)
+    status_daemon
+    ;;
   *)
-    echo "Usage: $0 {start|stop|restart}"
+    echo "Usage: $0 {start|stop|restart|status}"
     exit 1
     ;;
 esac

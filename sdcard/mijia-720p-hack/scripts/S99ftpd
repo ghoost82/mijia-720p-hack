@@ -4,30 +4,38 @@
 ## author: Jan Sperling , 2017
 
 sd_mountdir="/tmp/sd"
-LOGDIR="${sd_mountdir}/log"
-LOGFILE="${LOGDIR}/ftpd.log"
+if [ -r "${sd_mountdir}/mijia-720p-hack/scripts/functions.sh" ]; then
+  . "${sd_mountdir}/mijia-720p-hack/scripts/functions.sh"
+else
+  echo "Unable to load basic functions"
+  exit 1
+fi
+
 NAME="ftpd"
 DESC="FTP server"
-DAEMON="tcpsvd"
+DAEMON="/usr/bin/tcpsvd"
+DAEMON_OPTS="-vE 0.0.0.0 21 ftpd /"
+PIDFILE="/var/run/${NAME}.pid"
+LOGFILE="${LOGDIR}/${NAME}.log"
+
+check_daemon_bin "${DAEMON}" "${DESC}"
 
 case "$1" in
   start)
-    echo "Starting ${DESC}"
-
-    tcpsvd -vE 0.0.0.0 21 ftpd / >> "${LOGFILE}" 2>&1 &
-    [ $? = 0 ] && echo "OK" || echo "FAIL"
+    start_daemon_background
     ;;
   stop)
-    echo "Stopping ${DESC}"
-    pkill -f '^tcpsvd -vE 0.0.0.0 21 ftpd '
-    [ $? = 0 ] && echo "OK" || echo "FAIL"
+    stop_daemon_background
     ;;
   restart|reload)
     "$0" stop
     "$0" start
     ;;
+  status)
+    status_daemon
+    ;;
   *)
-    echo "Usage: $0 {start|stop|restart}"
+    echo "Usage: $0 {start|stop|restart|status}"
     exit 1
     ;;
 esac

@@ -28,7 +28,7 @@ if [ $BIN_BUSYBOX_MD5 == $TMP_BUSYBOX_MD5 ] &&
     /mnt/data/imi/imi_init/S93miot_devicekit stop
     /mnt/data/imi/imi_init/_S50mosquitto_noUsed stop
     /mnt/data/imi/imi_init/_S50telnet stop
-    for i in ${sd_mountdir}/mijia-720p-hack/scripts/S??* ;do
+    for i in ${sd_mountdir}/mijia-720p-hack/scripts/S99* ;do
       $i stop
     done
 
