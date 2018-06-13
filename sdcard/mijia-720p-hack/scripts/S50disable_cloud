@@ -1,0 +1,77 @@
+#!/bin/sh
+## purpose: controll cloud services
+## license: GPLv3+, http://www.gnu.org/licenses/gpl-3.0.html
+## author: Jan Sperling , 2017
+
+sd_mountdir="/tmp/sd"
+if [ -r "${sd_mountdir}/mijia-720p-hack/scripts/functions.sh" ]; then
+  . "${sd_mountdir}/mijia-720p-hack/scripts/functions.sh"
+else
+  echo "Unable to load basic functions"
+  exit 1
+fi
+
+disable_cloud() {
+  echo "Disabling Cloud"
+  #/mnt/data/imi/imi_init/S60miio_avstreamer
+  disable_binary "/mnt/data/miio_av/miio_avstreamer" "miio_avstreamer"
+  #/mnt/data/imi/imi_init/S93miio_client
+  disable_binary "/mnt/data/ot_wifi_tool/miio_client" "miio_client"
+  disable_binary "/mnt/data/ot_wifi_tool/miio_client_helper_nomqtt.sh" "miio_client_helper"
+  #/mnt/data/imi/imi_init/S93miot_devicekit
+  disable_binary "/mnt/data/miot/miot_devicekit" "miot_devicekit"
+  #/mnt/data/imi/imi_init/S93miot_qrcode
+  disable_binary "/mnt/data/miot/miot_qrcode.sh"
+  #/mnt/data/imi/imi_init/S95miio_smb
+  disable_binary "/mnt/data/miio_smb/miio_smb" "miio_smb"
+  # cron
+  disable_binary "/mnt/data/miot/logmi.sh" 
+  if pgrep restartd >/dev/null; then
+    /mnt/data/imi/imi_init/S99restartd restart
+  fi
+}
+
+enable_cloud() {
+  echo "Enabling Cloud"
+  #/mnt/data/imi/imi_init/S60miio_avstreamer
+  enable_binary "/mnt/data/miio_av/miio_avstreamer" "miio_avstreamer"
+  #/mnt/data/imi/imi_init/S93miio_client
+  enable_binary "/mnt/data/ot_wifi_tool/miio_client" "miio_client"
+  enable_binary "/mnt/data/ot_wifi_tool/miio_client_helper_nomqtt.sh" "miio_client_helper"
+  #/mnt/data/imi/imi_init/S93miot_devicekit
+  enable_binary "/mnt/data/miot/miot_devicekit" "miot_devicekit"
+  #/mnt/data/imi/imi_init/S93miot_qrcode
+  enable_binary "/mnt/data/miot/miot_qrcode.sh"
+  #/mnt/data/imi/imi_init/S95miio_smb
+  enable_binary "/mnt/data/miio_smb/miio_smb" "miio_smb"
+  # cron
+  enable_binary "/mnt/data/miot/logmi.sh" 
+  if pgrep restartd >/dev/null; then
+    /mnt/data/imi/imi_init/S99restartd restart
+  fi
+}
+
+case "$1" in
+  start)
+    disable_cloud
+    ;;
+  stop)
+    enable_cloud
+    ;;
+  status)
+    if pgrep miio_avstreamer > /dev/null; then
+      echo "Cloud service enabled"
+      return 3
+    else
+      echo "Cloud services disabled"
+      return 0
+    fi
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|status}"
+    exit 1
+    ;;
+esac
+
+exit $?
+
