@@ -27,7 +27,7 @@ sd_mountdir="/tmp/sd"
 
 
 if [ "${mmc_device}" = "" ]; then
-  echo "Impossible to find sdcard mounting point."
+  echo "Impossible to find sdcard mounting point. Do normal boot."
   do_vg_boot
   exit
 fi
@@ -45,109 +45,15 @@ if [ ! -d "${LOGDIR}" ]; then
   mkdir -p "${LOGDIR}"
 fi
 
-## Config
+## Execute custom code
 ##################################################################################
-if [ -f "${sd_mountdir}/mijia-720p-hack.cfg" ]; then
-  . "${sd_mountdir}/mijia-720p-hack.cfg"
-fi
-
-if [ "${DISABLE_HACK}" -eq 1 ]; then
-  echo "Hack disabled, proceed with default start" | tee -a "${LOGFILE}"
-  echo 0 > /tmp/ft_mode
+if [ ! -f "${sd_mountdir}/mijia-720p-hack/scripts/.ft_boot.sh" ];then
+  echo "Error starting ft_boot.sh. Do normal boot."
   do_vg_boot
   exit
-fi
-
-cat >> "${LOGFILE}" << EOF
-Mijia 720P hack configuration
-  ROOT_PASSWORD=${ROOT_PASSWORD}
-  WIFI_SSID=${WIFI_SSID}
-  WIFI_PASS=${WIFI_PASS}
-  TIMEZONE=${TIMEZONE}
-  NTP_SERVER=${NTP_SERVER}
-  ENABLE_SYSLOG=${ENABLE_SYSLOG}
-  DISABLE_CLOUD=${DISABLE_CLOUD}
-  DISABLE_OTA=${DISABLE_OTA}
-  ENABLE_TELNETD=${ENABLE_TELNETD}
-  ENABLE_SSHD=${ENABLE_SSHD}
-  ENABLE_HTTPD=${ENABLE_HTTPD}
-  ENABLE_FTPD=${ENABLE_FTPD}
-  ENABLE_SAMBA=${ENABLE_SAMBA}
-  ENABLE_RTSP=${ENABLE_RTSP}
-  RTSP_OPTIONS=${RTSP_OPTIONS}
-  SOUND_EN=${SOUND_EN}
-EOF
-
-(
-## Syslog
-##################################################################################
-if [ "${ENABLE_SYSLOG}" -eq 1 ]; then
-  /mnt/data/imi/imi_init/_S01logging start
-fi
-
-## Make /etc writeable
-##################################################################################
-if ! [ -d /tmp/etc ]; then
-  cp -r /etc /tmp/
-fi
-if ! mountpoint -q /etc; then
-  mount --rbind /tmp/etc /etc
-fi
-
-## Set time zone
-##################################################################################
-if [ -n "${TIMEZONE}" ]; then
-  echo "Configure time zone"
-  rm /tmp/etc/TZ
-  echo "${TIMEZONE}" > /tmp/etc/TZ
-  export TZ="${TIMEZONE}"
-fi
-
-## Set root Password
-##################################################################################
-if [ -n "${ROOT_PASSWORD}" ]; then
-  echo "Setting root password"
-  (echo "${ROOT_PASSWORD}"; echo "${ROOT_PASSWORD}") | passwd
-  if [ -f "${sd_mountdir}/mijia-720p-hack/bin/smbpasswd" ]; then
-    if ! [ -d "${sd_mountdir}/mijia-720p-hack/tmp/samba" ]; then
-      mkdir -p "${sd_mountdir}/mijia-720p-hack/tmp/samba"
-    fi
-    echo "Setting Samba root password"
-    (echo "${ROOT_PASS}"; echo "${ROOT_PASS}") | "${sd_mountdir}/mijia-720p-hack/bin/smbpasswd" -a -s
-  fi
 else
-  echo "WARN: root password must be set for SSH and SAMBA"
+  . "${sd_mountdir}/mijia-720p-hack/scripts/.ft_boot.sh"
 fi
-
-## WIFI
-##################################################################################
-if [ -f "${sd_mountdir}/mijia-720p-hack/scripts/configure_wifi" ]; then
-  echo "Configure WiFi"
-  sh "${sd_mountdir}/mijia-720p-hack/scripts/configure_wifi"
-fi
-
-## Disable Cloud Services, streaming and OTA
-##################################################################################
-if [ -f "${sd_mountdir}/mijia-720p-hack/scripts/cloud_control" ]; then
-  echo "Configure Cloud Services"
-  sh "${sd_mountdir}/mijia-720p-hack/scripts/cloud_control"
-fi
-
-) >> "${LOGFILE}" 2>&1
-
-## Start enabled Services
-##################################################################################
-if ! [ -f /mnt/data/test/boot.sh ]; then
-  ln -s ${sd_mountdir}/mijia-720p-hack/scripts/.boot.sh /mnt/data/test/boot.sh
-fi
-
-## Change Sound files
-##################################################################################
-#TODO /mnt/data/sound/ 
-##TEST echo "/mnt/data/sound/wifi_connected.aac" > /tmp/sound_fifo
-#if [ "${SOUND_EN}" -eq 1 ]; then
-#  echo "Changing Language to English" >> "${LOGFILE}"
-#fi
 
 ## Simulate S50gm standard flow
 ##################################################################################
