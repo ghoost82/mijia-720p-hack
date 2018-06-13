@@ -20,7 +20,7 @@ GMLIBDIR := gm_lib/gm_lib
 RTSPDDIR := gm_lib/product/GM8136_1MP/samples
 GMSAMPLEDIR := $(GMLIBDIR)/samples
 
-BINS = smbpasswd scp dbclient arm-php arm-php-cgi
+BINS = smbpasswd scp dbclient arm-php arm-php-cgi mijia_ctrl
 SBINS = dropbear lighttpd smbd
 
 ZLIBVERSION = 1.2.11
@@ -53,6 +53,9 @@ PHPURI = http://php.net/get/$(PHPARCHIVE)/from/this/mirror
 SAMBAVERSION = 3.6.25
 SAMBAARCHIVE = samba-$(SAMBAVERSION).tar.gz
 SAMBAURI = https://download.samba.org/pub/samba/$(SAMBAARCHIVE)
+MIJIACTRLVERSION = master
+MIJIACTRLARCHIVE = mijia-720p-ctrl-$(MIJIACTRLVERSION).zip
+MIJIACTRLURI = https://github.com/cck56/mijia-720p-ctrl/archive/$(MIJIACTRLVERSION).zip
 
 SAMPLES := gm_lib/display_with_encode \
            gm_lib/liveview_with_clearwin \
@@ -80,11 +83,11 @@ SAMPLES := gm_lib/display_with_encode \
 
 .PHONY: all libs fetch-sources
 
-all: $(BUILDDIR)/dropbear $(BUILDDIR)/lighttpd $(BUILDDIR)/php $(BUILDDIR)/samba sdcard/manufacture.bin gm_lib/rtspd
+all: $(BUILDDIR)/dropbear $(BUILDDIR)/lighttpd $(BUILDDIR)/php $(BUILDDIR)/samba $(BUILDDIR)/mijia_ctrl sdcard/manufacture.bin gm_lib/rtspd
 
 libs: $(BUILDDIR)/zlib $(BUILDDIR)/libxml2 $(BUILDDIR)/libjpeg-turbo $(BUILDDIR)/libpng $(BUILDDIR)/libgd $(BUILDDIR)/pcre
 
-fetch-sources: $(SOURCEDIR)/$(ZLIBARCHIVE) $(SOURCEDIR)/$(LIBXML2ARCHIVE) $(SOURCEDIR)/$(LIBJPEGARCHIVE) $(SOURCEDIR)/$(LIBPNGARCHIVE) $(SOURCEDIR)/$(LIBGDARCHIVE) $(SOURCEDIR)/$(PCREARCHIVE) $(SOURCEDIR)/$(DROPBEARARCHIVE) $(SOURCEDIR)/$(LIGHTTPDARCHIVE) $(SOURCEDIR)/$(PHPARCHIVE) $(SOURCEDIR)/$(SAMBAARCHIVE)
+fetch-sources: $(SOURCEDIR)/$(ZLIBARCHIVE) $(SOURCEDIR)/$(LIBXML2ARCHIVE) $(SOURCEDIR)/$(LIBJPEGARCHIVE) $(SOURCEDIR)/$(LIBPNGARCHIVE) $(SOURCEDIR)/$(LIBGDARCHIVE) $(SOURCEDIR)/$(PCREARCHIVE) $(SOURCEDIR)/$(DROPBEARARCHIVE) $(SOURCEDIR)/$(LIGHTTPDARCHIVE) $(SOURCEDIR)/$(PHPARCHIVE) $(SOURCEDIR)/$(SAMBAARCHIVE) $(SOURCEDIR)/$(MIJIACTRLARCHIVE)
 
 samples: $(SAMPLES)
 
@@ -127,6 +130,10 @@ $(SOURCEDIR)/$(PHPARCHIVE):
 $(SOURCEDIR)/$(SAMBAARCHIVE):
 	mkdir -p $(TOPDIR)/$(SOURCEDIR) && \
 	wget -t 2 -T 10 -c -O $@ $(SAMBAURI)
+
+$(SOURCEDIR)/$(MIJIACTRLARCHIVE):
+	mkdir -p $(TOPDIR)/$(SOURCEDIR) && \
+	wget -t 2 -T 10 -c -O $@ $(MIJIACTRLURI)
 
 
 $(BUILDDIR)/zlib: $(SOURCEDIR)/$(ZLIBARCHIVE)
@@ -274,8 +281,6 @@ $(BUILDDIR)/lighttpd: $(SOURCEDIR)/$(LIGHTTPDARCHIVE) $(BUILDDIR)/zlib $(BUILDDI
 	rm -rf $@-$(LIGHTTPDVERSION)
 	touch $@
 
-#--target=arm->$(TARGET)
-
 $(BUILDDIR)/php: $(SOURCEDIR)/$(PHPARCHIVE) $(BUILDDIR)/zlib $(BUILDDIR)/libxml2 $(BUILDDIR)/libjpeg-turbo $(BUILDDIR)/libpng $(BUILDDIR)/pcre $(BUILDDIR)/libgd
 	mkdir -p $(TOPDIR)/$(BUILDDIR) && rm -rf $@-$(PHPVERSION)
 	tar -xjf $(TOPDIR)/$(SOURCEDIR)/$(PHPARCHIVE) -C $(TOPDIR)/$(BUILDDIR)
@@ -364,6 +369,16 @@ $(BUILDDIR)/samba: $(SOURCEDIR)/$(SAMBAARCHIVE)
 		make installbin
 	rm -rf $@-$(SAMBAVERSION)
 	touch $@
+
+$(BUILDDIR)/mijia_ctrl: $(SOURCEDIR)/$(MIJIACTRLARCHIVE)
+	mkdir -p $(TOPDIR)/$(BUILDDIR) && rm -rf $(TOPDIR)/$(BUILDDIR)/mijia-720p-ctrl-$(MIJIACTRLVERSION)
+	unzip $(TOPDIR)/$(SOURCEDIR)/$(MIJIACTRLARCHIVE) -d $(TOPDIR)/$(BUILDDIR)
+	cd $(TOPDIR)/$(BUILDDIR)/mijia-720p-ctrl-$(MIJIACTRLVERSION) && \
+		make && \
+	  cp mijia_ctrl $(TOPDIR)/$(PREFIXDIR)/bin/
+	rm -rf $(TOPDIR)/$(BUILDDIR)/mijia-720p-ctrl-$(MIJIACTRLVERSION)
+	touch $@
+
 
 sdcard/manufacture.bin:
 	tar -cf $(TOPDIR)/sdcard/manufacture.bin manufacture/test_drv
