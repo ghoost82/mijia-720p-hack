@@ -4,15 +4,23 @@
 ## author: Jan Sperling , 2017
 
 sd_mountdir="/tmp/sd"
-LOGDIR="${sd_mountdir}/log"
-LOGFILE="${LOGDIR}/ft_boot.log"
-if [ -f "${sd_mountdir}/mijia-720p-hack.cfg" ]; then
-  . "${sd_mountdir}/mijia-720p-hack.cfg"
+if [ -r "${sd_mountdir}/mijia-720p-hack/scripts/functions.sh" ]; then
+  . "${sd_mountdir}/mijia-720p-hack/scripts/functions.sh"
+else
+  echo "Unable to load basic functions"
+  exit 1
 fi
 
-(
+LOGFILE="${LOGDIR}/ft_boot.log"
 
+(
 echo "Executing /mnt/data/test/boot.sh"
+
+## Put our bins into PATH
+if [ -d "${sd_mountdir}/mijia-720p-hack/bin" ] &&
+   ! mountpoint -q /tmp/sd/ft; then
+  mount --rbind "${sd_mountdir}/mijia-720p-hack/bin" /tmp/sd/ft
+fi
 
 ## Start enabled services
 if [ "${ENABLE_TELNETD}" -eq 1 ]; then
@@ -40,23 +48,33 @@ if [ "${ENABLE_RTSP}" -eq 1 ]; then
   ${sd_mountdir}/mijia-720p-hack/scripts/S99rtsp start
 fi
 
+#Starting serices in non cloud configuration
+if [ "${DISABLE_CLOUD}" -eq 1 ]; then
+  night_mode="$(get_nvram night_mode)"
+  echo "Starting motor calibration"
+  motor calibrate
+  echo "Done"
+  case $night_mode in
+    0)
+      ${sd_mountdir}/mijia-720p-hack/scripts/S99auto_night_mode start
+      ;;
+    1)
+      night_mode off
+      ;;
+    2)
+      night_mode on
+      ;;
+  esac
+  if [ "$(/usr/sbin/nvram get light)" = "on" ]; then
+    blue_led on
+  else
+    blue_led off
+  fi
+  yellow_led off
+fi
+
 ## Sync time
 /usr/sbin/ntpd -q -p "${NTP_SERVER}"
-
-
-## LED blue: 0, red: 1, set blue.
-if [ "$(/usr/sbin/nvram get light)" = "on" ]; then
-  /mnt/data/miot/ledctl 0 80 0 0 0 2
-else
-  /mnt/data/miot/ledctl 0 0 1 0 0 2
-fi
-/mnt/data/miot/ledctl 1 0 1 0 0 2
-
-## Put our bins into PATH
-if [ -d "${sd_mountdir}/mijia-720p-hack/bin" ] &&
-   ! mountpoint -q /tmp/sd/ft; then
-  mount --rbind "${sd_mountdir}/mijia-720p-hack/bin" /tmp/sd/ft
-fi
 
 ## Cleanup
 if [ -f /mnt/data/test/boot.sh ]; then

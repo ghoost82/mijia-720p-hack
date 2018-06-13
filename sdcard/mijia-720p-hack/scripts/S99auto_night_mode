@@ -1,0 +1,48 @@
+#!/bin/sh
+## purpose: Init and config script for night vison mode
+## license: GPLv3+, http://www.gnu.org/licenses/gpl-3.0.html
+## author: Jan Sperling , 2018
+
+sd_mountdir="/tmp/sd"
+if [ -r "${sd_mountdir}/mijia-720p-hack/scripts/functions.sh" ]; then
+  . "${sd_mountdir}/mijia-720p-hack/scripts/functions.sh"
+else
+  echo "Unable to load basic functions"
+  exit 1
+fi
+
+NAME="auto_night_mode"
+DESC="Auto Night Mode"
+DAEMON="/usr/sbin/ir_sample"
+DAEMON_OPTS="200 5"
+PIDFILE="/var/run/${NAME}.pid"
+LOGFILE="${LOGDIR}/${NAME}.log"
+
+check_daemon_bin "${DAEMON}" "${DESC}"
+
+case "$1" in
+  start)
+    if ! pgrep ${DAEMON##*/} >/dev/null; then
+      start_daemon_background
+    else
+      echo "${DESC} already running."
+    fi
+    ;;
+  stop)
+    stop_daemon_background
+    ;;
+  restart|reload)
+    "$0" stop
+    "$0" start
+    ;;
+  status)
+    status_daemon
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|status}"
+    exit 1
+    ;;
+esac
+
+exit $?
+
