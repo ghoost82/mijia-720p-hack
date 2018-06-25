@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width" />
+    <title>Mijia 720P hack</title>
+    <link rel="stylesheet" href="mijia.css">
+  </head>
+  <body>
+    <ul class="topnav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="settings.html" class="active">Settings</a></li>
+      <li class="right"><a href="about.html">About</a></li>
+    </ul>
+
+    <div style="padding:0 16px;">
+      <h1>Camera Settings - Not Working yet</h1>
+      <table>
+<tr>
+  <td>Status Light</td>
+  <td>
+    <label class="switch">
+      <input type="checkbox" >
+      <span class="slider"></span>
+    </label>
+  </td>
+</tr>
+  <tr>
+    <td>Night vision</td>
+    <td>
+       <label class="nice-select">
+         <select>
+           <option selected>automatic</option>
+           <option >off</option>
+           <option >on</option>
+        </select>
+      </label>
+    </td>
+  </tr>
+      </table>
+
+      <h1>System Settings</h1>
+      <table>
+<tr>
+  <td>Prevent online updates</td>
+  <td>
+    <label class="switch">
+      <input type="checkbox" checked>
+      <span class="slider"></span>
+    </label>
+  </td>
+</tr>
+  <tr>
+    <td>Time Zone</td>
+    <td>
+      <label class="nice-select">
+        <select>
+<option >GMT</option>
+<option >GMT+0</option>
+<option >GMT+1</option>
+<option >GMT+10</option>
+<option >GMT+11</option>
+<option >GMT+12</option>
+<option >GMT+2</option>
+<option >GMT+3</option>
+<option >GMT+4</option>
+<option >GMT+5</option>
+<option >GMT+6</option>
+<option >GMT+7</option>
+<option >GMT+8</option>
+<option >GMT+9</option>
+<option >GMT-0</option>
+<option >GMT-1</option>
+<option >GMT-10</option>
+<option >GMT-11</option>
+<option >GMT-12</option>
+<option >GMT-13</option>
+<option >GMT-14</option>
+<option >GMT-2</option>
+<option >GMT-3</option>
+<option >GMT-4</option>
+<option >GMT-5</option>
+<option >GMT-6</option>
+<option >GMT-7</option>
+<option >GMT-8</option>
+<option >GMT-9</option>
+<option >GMT0</option>
+<option >Greenwich</option>
+<option >UCT</option>
+<option selected>UTC</option>
+<option >Universal</option>
+<option >Zulu</option>
+        </select>
+      </label>
+    </td>
+  </tr>
+      </table>
+
+      <h1>Service Settings</h1>
+      <table>
+<tr>
+  <td>Xiaomi Cloud Services</td>
+  <td>
+    <label class="switch">
+      <input type="checkbox" checked>
+      <span class="slider"></span>
+    </label>
+  </td>
+</tr>
+<tr>
+  <td>RTSP Streaming Server</td>
+  <td>
+    <label class="switch">
+      <input type="checkbox" checked>
+      <span class="slider"></span>
+    </label>
+  </td>
+</tr>
+<tr>
+  <td>Telnet Server</td>
+  <td>
+    <label class="switch">
+      <input type="checkbox" >
+      <span class="slider"></span>
+    </label>
+  </td>
+</tr>
+<tr>
+  <td>SSH Server</td>
+  <td>
+    <label class="switch">
+      <input type="checkbox" checked>
+      <span class="slider"></span>
+    </label>
+  </td>
+</tr>
+<tr>
+  <td>HTTP Server</td>
+  <td>
+    <label class="switch">
+      <input type="checkbox" checked>
+      <span class="slider"></span>
+    </label>
+  </td>
+</tr>
+<tr>
+  <td>FTP Server</td>
+  <td>
+    <label class="switch">
+      <input type="checkbox" >
+      <span class="slider"></span>
+    </label>
+  </td>
+</tr>
+<tr>
+  <td>SAMBA Server</td>
+  <td>
+    <label class="switch">
+      <input type="checkbox" >
+      <span class="slider"></span>
+    </label>
+  </td>
+</tr>
+      </table>
+    <div>
+    <script type="text/javascript">
+      var ip = location.host;
+      document.getElementById("ip").textContent=ip;
+      document.getElementById("ch0_0").href="rtsp://"+ip+":554/live/ch00_0";
+    </script>
+  </body>
+</html>

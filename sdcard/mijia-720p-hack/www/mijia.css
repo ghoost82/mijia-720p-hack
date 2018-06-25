@@ -1,0 +1,129 @@
+body {margin: 0;}
+
+/*
+ * responsive topnav
+ */
+ul.topnav {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #505050;
+}
+
+ul.topnav li {float: left;}
+
+ul.topnav li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+ul.topnav li a:hover:not(.active) {color: #00B082;}
+
+ul.topnav li a.active {background-color: #00B082;}
+
+ul.topnav li.right {float: right;}
+
+@media screen and (max-width: 600px){
+  ul.topnav li.right,
+  ul.topnav li {float: none;}
+}
+
+/*
+ * hoverable table
+ */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+}
+      
+th, td {
+  text-align: left;
+  padding: 16px;
+  border-bottom: 1px solid #EFEFEF;
+}
+
+tr:hover {background-color:#F3F3F3;}
+
+/*
+ * toggle switch
+ */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+  float: right;
+}
+
+.switch input {display: none;}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 34px;
+  border: 1px solid #E0E0E0;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 1px;
+  background-color: #E0E0E0;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: white;
+  border: 1px solid #E0E0E0
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px white;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(18px);
+  -ms-transform: translateX(18px);
+  transform: translateX(18px);
+  background-color: #62708A;
+}
+
+
+/*
+ * Dropdown menu
+ */
+
+select {
+  position: relative;
+  border: 0px solid;
+  color: #00B082;
+  display: inline-block;
+  float: right;
+  width: 150px;
+  padding: 1px;
+}
+
+option {
+  position: relative;
+  background-color: #F3F3F3;
+  padding:.3em 1em .3em 1em;
+  display: inline-block;
+  color: black;
+}
