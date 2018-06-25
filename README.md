@@ -24,9 +24,9 @@ This camera has the default following features:
 This hack includes:
 * No more cloud feature (nothing goes out of your local network)
 * No more need to use a smartphone application
-* Telnet server - _Enabled by default._
+* Telnet server - _Disabled by default._
 * Web server with PHP support - _Enabled by default._
-* RTSP server - _Enabled by default._
+* RTSP server - _Disabled by default._
 * SSH server - _Disabled by default._
 * FTP server - _Disabled by default._
 * Samba Server - _Disabled by default._
@@ -125,6 +125,8 @@ You can connect to live video stream (currently only supports 720p) on:
 
 rtsp://your-camera-ip/live/ch00_0
 
+For stability reasons it is recommend to disable cloud services while using RTSP.
+
 FTP server
 ----------
 
@@ -151,6 +153,8 @@ Disabling the cloud services disables the following functions:
 * Motion detection
 * No video data or configuration with the smartphone application
 * No recordings on the SD card or a remote file system
+
+For stability reasons it is recommend to disable cloud services while using RTSP.
 
 I want more !
 =============
