@@ -148,7 +148,7 @@ set_nvram() {
   value="$2"
   if [ "$(get_nvram "${variable}")" != "${value}" ]; then
     /usr/sbin/nvram set ${variable}="${value}"; RC="$((RC|$?))"
-    #/usr/sbin/nvram commit; RC="$((RC|$?))"
+    /usr/sbin/nvram commit; RC="$((RC|$?))"
   fi
   return "${RC}"
 }
