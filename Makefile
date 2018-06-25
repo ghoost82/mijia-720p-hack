@@ -16,8 +16,8 @@ SOURCEDIR := src
 PREFIXDIR := prefix
 BUILDDIR := build
 INSTALLDIR := sdcard/mijia-720p-hack/bin
-GMLIBDIR := gm_lib/gm_lib
-RTSPDDIR := gm_lib/product/GM8136_1MP/samples
+GMLIBDIR := gm_lib/gm_graph/gm_lib
+RTSPDDIR := gm_lib/gm_graph/product/GM8136_1MP/samples
 GMSAMPLEDIR := $(GMLIBDIR)/samples
 
 BINS = smbpasswd scp dbclient arm-php arm-php-cgi mijia_ctrl
@@ -93,47 +93,47 @@ samples: $(SAMPLES)
 
 $(SOURCEDIR)/$(ZLIBARCHIVE):
 	mkdir -p $(TOPDIR)/$(SOURCEDIR) && \
-	wget -t 2 -T 10 -c -O $@ $(ZLIBURI)
+	wget -t 2 -T 10 -c -O $@ $(ZLIBURI) || rm -f $@
 
 $(SOURCEDIR)/$(LIBXML2ARCHIVE):
 	mkdir -p $(TOPDIR)/$(SOURCEDIR) && \
-	wget -t 2 -T 10 -c -O $@ $(LIBXML2URI)
+	wget -t 2 -T 10 -c -O $@ $(LIBXML2URI) || rm -f $@
 
 $(SOURCEDIR)/$(LIBJPEGARCHIVE):
 	mkdir -p $(TOPDIR)/$(SOURCEDIR) && \
-	wget -t 2 -T 10 -c -O $@ $(LIBJPEGURI)
+	wget -t 2 -T 10 -c -O $@ $(LIBJPEGURI) || rm -f $@
 
 $(SOURCEDIR)/$(LIBPNGARCHIVE):
 	mkdir -p $(TOPDIR)/$(SOURCEDIR) && \
-	wget -t 2 -T 10 -c -O $@ $(LIBPNGURI)
+	wget -t 2 -T 10 -c -O $@ $(LIBPNGURI) || rm -f $@
 
 $(SOURCEDIR)/$(LIBGDARCHIVE):
 	mkdir -p $(TOPDIR)/$(SOURCEDIR) && \
-	wget -t 2 -T 10 -c -O $@ $(LIBGDURI)
+	wget -t 2 -T 10 -c -O $@ $(LIBGDURI) || rm -f $@
 
 $(SOURCEDIR)/$(PCREARCHIVE):
 	mkdir -p $(TOPDIR)/$(SOURCEDIR) && \
-	wget -t 2 -T 10 -c -O $@ $(PCREURI)
+	wget -t 2 -T 10 -c -O $@ $(PCREURI) || rm -f $@
 
 $(SOURCEDIR)/$(DROPBEARARCHIVE):
 	mkdir -p $(TOPDIR)/$(SOURCEDIR) && \
-	wget -t 2 -T 10 -c -O $@ $(DROPBEARURI)
+	wget -t 2 -T 10 -c -O $@ $(DROPBEARURI) || rm -f $@
 
 $(SOURCEDIR)/$(LIGHTTPDARCHIVE):
 	mkdir -p $(TOPDIR)/$(SOURCEDIR) && \
-	wget -t 2 -T 10 -c -O $@ $(LIGHTTPDURI)
+	wget -t 2 -T 10 -c -O $@ $(LIGHTTPDURI) || rm -f $@
 
 $(SOURCEDIR)/$(PHPARCHIVE):
 	mkdir -p $(TOPDIR)/$(SOURCEDIR) && \
-	wget -t 2 -T 10 -c -O $@ $(PHPURI)
+	wget -t 2 -T 10 -c -O $@ $(PHPURI) || rm -f $@
 
 $(SOURCEDIR)/$(SAMBAARCHIVE):
 	mkdir -p $(TOPDIR)/$(SOURCEDIR) && \
-	wget -t 2 -T 10 -c -O $@ $(SAMBAURI)
+	wget -t 2 -T 10 -c -O $@ $(SAMBAURI) || rm -f $@
 
 $(SOURCEDIR)/$(MIJIACTRLARCHIVE):
 	mkdir -p $(TOPDIR)/$(SOURCEDIR) && \
-	wget -t 2 -T 10 -c -O $@ $(MIJIACTRLURI)
+	wget -t 2 -T 10 -c -O $@ $(MIJIACTRLURI) || rm -f $@
 
 
 $(BUILDDIR)/zlib: $(SOURCEDIR)/$(ZLIBARCHIVE)
@@ -297,6 +297,7 @@ $(BUILDDIR)/php: $(SOURCEDIR)/$(PHPARCHIVE) $(BUILDDIR)/zlib $(BUILDDIR)/libxml2
 			--with-libxml-dir=$(TOPDIR)/$(PREFIXDIR) \
 			--with-jpeg-dir=$(TOPDIR)/$(PREFIXDIR) \
 			--with-png-dir=$(TOPDIR)/$(PREFIXDIR) \
+			--with-zlib-dir=$(TOPDIR)/$(PREFIXDIR) \
 			--enable-pdo \
 			--enable-simplexml \
 			--enable-json \
@@ -387,7 +388,7 @@ sdcard/manufacture.bin:
 gm_lib/rtspd: 
 	$(TARGET)-gcc -Wall -I$(GMLIBDIR)/inc $(RTSPDDIR)/$(@F).c $(RTSPDDIR)/librtsp.a -L$(GMLIBDIR)/lib -lpthread -lm -lrt -lgm -o $@
 
-gm_lib/$(SAMPLES):
+$(SAMPLES):
 	$(TARGET)-gcc -Wall -I$(GMLIBDIR)/inc -L$(GMLIBDIR)/lib -lpthread -lgm $(GMSAMPLEDIR)/$(@F).c -o $@
 
 .PHONY: install uninstall
@@ -402,6 +403,9 @@ install: all
 uninstall:
 	cd $(TOPDIR)/$(INSTALLDIR) && rm -f $(BINS) $(SBINS) rtspd
 
+mijia-720p-hack.zip: install
+	rm -f mijia-720p-hack.zip && zip -r mijia-720p-hack.zip README.md sdcard
+
 .PHONY: sourceclean clean distclean
 
 sourceclean:
@@ -409,7 +413,9 @@ sourceclean:
 
 clean:
 	rm -rf $(TOPDIR)/$(BUILDDIR)
-	rm -rf $(TOPDIR)/$(PREFIXDIR)
-	rm -rf gm_lib/rtsp gm_lib/$(SAMPLES)
 
-distclean: clean sourceclean
+distclean: clean sourceclean uninstall
+	rm -rf $(TOPDIR)/$(PREFIXDIR)
+	rm -f gm_lib/rtsp $(SAMPLES)
+	rm -f mijia-720p-hack.zip
+
