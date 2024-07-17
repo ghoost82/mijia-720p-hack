@@ -61,7 +61,7 @@ enable_binary() {
 # Print start-stop-daemon return status
 ok_fail() {
   if [ "$1" = 0 ]; then
-    echo "OK" 
+    echo "OK"
   else
     echo "FAIL"
   fi
@@ -100,7 +100,7 @@ stop_daemon() {
 
 # Stop background daemon
 stop_daemon_background() {
-  if stop_daemon; then 
+  if stop_daemon; then
     if [ -f "${PIDFILE}" ]; then
       rm "${PIDFILE}"
     fi
@@ -153,14 +153,14 @@ set_nvram() {
   return "${RC}"
 }
 
-# Get ISP328 values 
+# Get ISP328 values
 get_isp328() {
   variable="$1"
   echo r ${variable} > /proc/isp328/command
   cat /proc/isp328/command
 }
 
-# Set ISP328 values 
+# Set ISP328 values
 set_isp328() {
   variable="$1"
   value="$2"
@@ -422,7 +422,7 @@ motor(){
     echo "motor only supported while  cloud is disabled"
     return 1
   elif [ "$1" = "up" ] || [ "$1" = "down" ] ||
-       [ "$1" = "left" ] || [ "$1" = "right" ] || 
+       [ "$1" = "left" ] || [ "$1" = "right" ] ||
        [ "$1" = "calibrate" ]; then
     ${sd_mountdir}/mijia-720p-hack/scripts/S99auto_night_mode stop > /dev/null; RC="$((RC|$?))"
   fi
@@ -435,10 +435,10 @@ motor(){
     set_nvram ptz-y 0; RC="$((RC|$?))"
   fi
   if [ "${ptz_x}" -gt 31 ]; then
-    set_nvram ptz-y 31; RC="$((RC|$?))"
+    set_nvram ptz-x 31; RC="$((RC|$?))"
   fi
   if [ "${ptz_x}" -lt 0 ]; then
-    set_nvram ptz-y 0; RC="$((RC|$?))"
+    set_nvram ptz-x 0; RC="$((RC|$?))"
   fi
   case "$1" in
     up)
@@ -456,13 +456,13 @@ motor(){
     left)
       if [ "${ptz_x}" -lt 31 ]; then
         ${MIJIACTRL} MOVE +1 0 > /dev/null; RC="$((RC|$?))"
-        set_nvram ptz-y $((ptz_x+1)); RC="$((RC|$?))"
+        set_nvram ptz-x $((ptz_x+1)); RC="$((RC|$?))"
       fi
       ;;
     right)
       if [ "${ptz_x}" -ge 0 ]; then
         ${MIJIACTRL} MOVE -1 0 > /dev/null; RC="$((RC|$?))"
-        set_nvram ptz-y $((ptz_x-1)); RC="$((RC|$?))"
+        set_nvram ptz-x $((ptz_x-1)); RC="$((RC|$?))"
       fi
       ;;
     calibrate)
@@ -480,7 +480,7 @@ motor(){
       cat << EOF
 {
   "motor":
-  { "horizontal": 
+  { "horizontal":
     { "nvram": "${ptz_x}",
       "HPOS": "${hpos}"
     },
@@ -517,7 +517,7 @@ EOF
 }
 
 
-if [ ! -d /var/run ]; then 
-  mkdir -p /var/run 
-fi 
+if [ ! -d /var/run ]; then
+  mkdir -p /var/run
+fi
 
